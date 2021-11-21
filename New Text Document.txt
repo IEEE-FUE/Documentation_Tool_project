@@ -1,4 +1,0 @@
-reverse(s.begin(), s.end());
-
-#include <bits/stdc++.h>
-SaRa
