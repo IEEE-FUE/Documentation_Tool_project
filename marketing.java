@@ -1,20 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package app;
 
 /**
- *
- * @author Nada
- * 
+ 
  */
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -74,16 +70,19 @@ public class marketing  extends JFrame  implements ActionListener {
     
 //declaration of objects components in postArea and banner part 
     JTextArea postArea;
-    JPanel ppost,pnext2,pimage,downloadp;
+    JPanel ppost,pnext2,pimage,next5p;
     JLabel post;
-    JButton next2,download;
+    JButton next2,next5;
     Label Label1 ;  
     Button select; 
     Image Image1;    
     FileDialog fd; 
-  
-
- 
+    
+ //declaration of objects components in feedback part
+     JPanel feedbackp,DOWNLOADP;
+     JLabel feedback;
+     JTextField feedback_field;
+     JButton download;
 
     
     
@@ -92,7 +91,7 @@ public class marketing  extends JFrame  implements ActionListener {
         
       
        base=new JPanel(); // main base panel containing whole programe panels
-       base.setLayout(new GridLayout(19, 1));
+       base.setLayout(new GridLayout(21, 1));
        base.setBackground(Color.WHITE);
         
 // seting back and foregrounds, font, color, size and strings for marketing part components
@@ -374,14 +373,14 @@ public class marketing  extends JFrame  implements ActionListener {
         ppost.add(postArea);
         ppost.add(postArea);
         
-        downloadp=new JPanel();
-        downloadp.setBackground(Color.WHITE);
-        
+        next5p=new JPanel();
+        next5p.setBackground(Color.WHITE);
+        //image part
         Label1 = new Label("Choose your image");
         Label1.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
         select = new Button("select");
-        download=new JButton("download");
-        downloadp.add(download);
+        next5=new JButton("next");
+        next5p.add(next5);
         
         fd = new FileDialog(this, "Open", FileDialog.LOAD);
         select.addActionListener(this);
@@ -394,6 +393,32 @@ public class marketing  extends JFrame  implements ActionListener {
 //        Canvas1 = new imageLoad(null);  
 //        Canvas1.setSize(1000, 1000);
         this.show(); 
+  // seting back and foregrounds, font, color, size and strings for Audience feedback part part components      
+        DOWNLOADP=new JPanel();
+        DOWNLOADP.setBackground(Color.WHITE);
+        
+        feedbackp=new JPanel();
+        feedbackp.setBackground(Color.WHITE);
+        
+        feedback = new JLabel("Audience feedback");
+        feedback.setBackground(Color.WHITE);
+        feedback.setFont(new Font("Arial", Font.BOLD, 50));
+        feedback.setForeground(new Color(0,97,169));
+        
+        feedback_field = new JTextField(50);
+        feedback_field.setFont(new Font("Arial", Font.PLAIN, 30));
+        feedback_field.setForeground(new Color(0,97,169));
+       // feedback_field.
+        
+        download=new JButton("Download");
+        download.setFont(new Font("Arial", Font.PLAIN, 40));
+        download.setForeground(new Color(0,97,169));
+        DOWNLOADP.add(download);
+        feedbackp.add(feedback);
+        feedbackp.setLayout(new FlowLayout(10,10,10));
+        feedbackp.add(feedback_field);
+        next5.addActionListener(this);
+        
         
 // adding the main base panel to the programe frame
         this.add(base);
@@ -497,7 +522,7 @@ public class marketing  extends JFrame  implements ActionListener {
          next2.setEnabled(false);
 }
    /* after choosing speakers number, 
-   text fields and labels will appear, they number will be the same choosen number */
+   text fields and labels will appear, they number will be the same chosen number */
    if(e.getSource()==nextButton) {
 
       int o= (int) cb.getSelectedItem();
@@ -537,12 +562,12 @@ public class marketing  extends JFrame  implements ActionListener {
         base.add(ppost);
         base.add(pimage);
         postArea.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
-        base.add(downloadp);
+        base.add(next5p);
              
         }
          
-   /* when use choose select button, 
-   file dialod will appear
+   /* when user press on select button, 
+   file dialog will appear
     */
   if (e.getSource()==select){             
           fd.show();  
@@ -561,9 +586,40 @@ public class marketing  extends JFrame  implements ActionListener {
            Image1 = toolkit.getImage(d);  
 //   Canvas1.setImage(Image1);  
 //   Canvas1.repaint();  
-  }  
+  }  }
+       // when user click next,the speakers part will appear
+   if (e.getSource()==next5){
+         base.add(feedbackp);
+         base.add(DOWNLOADP);
+         next5.setEnabled(false);
+} 
+   String s=feedback_field.getText();  
+        if(s==null){}  
+        else{  
+            try{  
+            URL u=new URL(s);  
+            URLConnection uc=u.openConnection();  
+          
+            InputStream is=uc.getInputStream();  
+            int i;  
+            StringBuilder sb=new StringBuilder();  
+            while((i=is.read())!=-1){  
+                sb.append((char)i);  
+            }  
+              
+            }catch(Exception ex){System.out.println(e);}  
+        }  
+    
+    
+    
+    
+    
+    
+    
+    
+    }   
   {  
- 
+  
     class imageLoad extends Canvas  
     {  
      Image img;  
@@ -610,6 +666,4 @@ public class marketing  extends JFrame  implements ActionListener {
  }
 }
   }
-    }
-}
 

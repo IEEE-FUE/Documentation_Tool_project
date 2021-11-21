@@ -8,10 +8,7 @@ package app;
 import javax.swing.JFrame;
 
 
-/**
- *
- * @author Nada
- */
+
 public class APP {
 
     /**
