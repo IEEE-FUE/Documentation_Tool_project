@@ -1,20 +1,39 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
 package app;
 
 /**
- 
+ *
+ * 
  */
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,18 +42,25 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
+import javax.swing.text.Position;
+import javax.swing.text.Segment;
 
 
 public class marketing  extends JFrame  implements ActionListener {
     // declaration of objects components in marketing part 
-    
-    JPanel base,p1,p2,p3,p4,image;
-    JLabel marketing, rNum, reach,aNum,IEEE_logo;
+    Document document1 = new Document(); 
+    JPanel base,p1,p2,p3,p4,image,pMarketing;
+    JLabel marketing, rNum, reach,aNum,IEEE_logo,space;
     JComboBox registerationNum;
     JTextField attendee,reachNum;
     String[]objects={"30-40","50-60","70-80","90-100","100-110","120-150"};
     JRadioButton explain;
-    JButton next;
+    JButton next,start;
     JScrollPane scroll;
     
     // declaration of objects components in venue part 
@@ -70,7 +96,7 @@ public class marketing  extends JFrame  implements ActionListener {
     
 //declaration of objects components in postArea and banner part 
     JTextArea postArea;
-    JPanel ppost,pnext2,pimage,next5p;
+    JPanel ppost,pnext2,pimage,next5p,p1post;
     JLabel post;
     JButton next2,next5;
     Label Label1 ;  
@@ -81,9 +107,9 @@ public class marketing  extends JFrame  implements ActionListener {
  //declaration of objects components in feedback part
      JPanel feedbackp,DOWNLOADP;
      JLabel feedback;
-     JTextField feedback_field;
+     JTextArea feedback_field;
      JButton download;
-
+     PdfWriter writer;
     
     
     
@@ -91,7 +117,7 @@ public class marketing  extends JFrame  implements ActionListener {
         
       
        base=new JPanel(); // main base panel containing whole programe panels
-       base.setLayout(new GridLayout(21, 1));
+       base.setLayout(new GridLayout(13, 1));
        base.setBackground(Color.WHITE);
         
 // seting back and foregrounds, font, color, size and strings for marketing part components
@@ -107,15 +133,17 @@ public class marketing  extends JFrame  implements ActionListener {
         
         IEEE_logo=new JLabel();
         IEEE_logo.setIcon(new ImageIcon("C:\\Users\\Nada\\Downloads\\IEEE1.jpg"));
+     
        
         p1=new JPanel();
         p2=new JPanel();
         p3=new JPanel();
         p4=new JPanel();
+        pMarketing=new JPanel();
         image=new JPanel();
         // first next button
         NextPanel=new JPanel();
-        next=new JButton("Next");
+        next=new JButton("Start");
         NextPanel.add(next);
         NextPanel.setBackground(Color.WHITE);
         
@@ -123,23 +151,29 @@ public class marketing  extends JFrame  implements ActionListener {
         p2.setLayout(new FlowLayout(10, 10, 10));
         p3.setLayout(new FlowLayout(10, 10, 10));
         p4.setLayout(new FlowLayout(10, 10, 10));
-        image.setLayout(new GridLayout(1, 1));
+        image.setLayout(new FlowLayout(10, 10, 10));
+        pMarketing.setLayout(new GridLayout(5,1));
+       
         
         rNum=new JLabel("► Number of registered individuals:");
         rNum.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
         
+        
         aNum=new JLabel("► Number of attendee:");
         aNum.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
+      
         
-        attendee=new JTextField(" Enter attendee number", 20);
-        attendee.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
+        attendee=new JTextField(" Enter attendee number", 15);
+        attendee.setFont(new Font("Arial", Font.CENTER_BASELINE, 20));
         attendee.setForeground(new Color(0,97,169));
         
+     
         reach=new JLabel("► Reach on Social media:");
         reach.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
         
-        reachNum=new JTextField(" Enter attendee number", 20);
-        reachNum.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
+        
+        reachNum=new JTextField(" Enter attendee number", 15);
+        reachNum.setFont(new Font("Arial", Font.CENTER_BASELINE, 20));
         reachNum.setForeground(new Color(0,97,169));
         
         registerationNum=new JComboBox(objects);
@@ -160,18 +194,22 @@ public class marketing  extends JFrame  implements ActionListener {
         validate();
        
         //adding panels to the main bass panel
+        
+        
         base.add(image);
-        base.add(p1);
-        base.add(p2);
-        base.add(p3);
-        base.add(p4);
-        base.add(NextPanel);
+        pMarketing.add(p1);
+        pMarketing.add(p2);
+        pMarketing.add(p3);
+        pMarketing.add(p4);
+        pMarketing.add(NextPanel);
+       // pMarketing.setPreferredSize(new Dimension(700,1100));
+        base.add(pMarketing);
         
         p4.setBackground(Color.white);
         p1.setBackground(Color.white);
         p2.setBackground(Color.white);
         p3.setBackground(Color.white);
-        
+       // pMarketing.setPreferredSize(new Dimension(700,1100));
         //applying actions to the buttons
         explain.addActionListener(this);
         next.addActionListener(this);
@@ -180,7 +218,7 @@ public class marketing  extends JFrame  implements ActionListener {
         
 // seting back and foregrounds, font, color, size and strings for venue part components
         
-       p5=new JPanel();
+       p5=new JPanel(new GridLayout(4,1));
        p5.setBackground(Color.WHITE);
        p6=new JPanel();
        p6.setLayout(new GridLayout(1,1));
@@ -201,8 +239,8 @@ public class marketing  extends JFrame  implements ActionListener {
        offlineButton.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
        onlineButton.setBackground(Color.WHITE);
        offlineButton.setBackground(Color.white);
-       whereField=new JTextField(30);
-       whereField.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
+       whereField=new JTextField(15);
+       whereField.setFont(new Font("Arial", Font.CENTER_BASELINE, 20));
        
        //applying actions to the buttons
        onlineButton.addActionListener(this);
@@ -212,12 +250,15 @@ public class marketing  extends JFrame  implements ActionListener {
        p6.add(onlineButton);
        p6.add(offlineButton);
        p7.add(where);
-       p8.add(whereField);
+       p7.add(whereField);
+       p5.add(p6);
+       p5.add(p7);
+       
         
        
 // seting back and foregrounds, font, color, size and strings for rating part components
        
-       ratep=new JPanel(new GridLayout(5, 1)); //main panel
+       ratep=new JPanel(new GridLayout(6, 1)); //main panel
        
        rate=new JLabel();
        rate.setText("Results and Rates ");
@@ -281,7 +322,9 @@ public class marketing  extends JFrame  implements ActionListener {
         ratep.add(pra2);
         ratep.add(pra3);
         ratep.add(pnext1);
- 
+        base.setPreferredSize(new Dimension(1000,4550));
+       
+      
          
         
 // seting back and foregrounds, font, color, size and strings for speakers part components
@@ -308,8 +351,8 @@ public class marketing  extends JFrame  implements ActionListener {
         cb.setForeground(new Color(0,97,169));
         cb.setFont(new Font("Arial", Font.PLAIN, 20));
         
-        speaker1=new JTextField(20);
-        speaker2=new JTextField(20);
+        speaker1=new JTextField(15);
+        speaker2=new JTextField(15);
 
         jPanel1.setLayout(new FlowLayout(10,10,10));
         jPanel1.add(sp2);
@@ -370,12 +413,12 @@ public class marketing  extends JFrame  implements ActionListener {
         ppost.setLayout(new GridLayout(2, 1));
         ppost.setBackground(Color.white);
         
-        ppost.add(postArea);
+        ppost.add(post);
         ppost.add(postArea);
         
         next5p=new JPanel();
         next5p.setBackground(Color.WHITE);
-        //image part
+        
         Label1 = new Label("Choose your image");
         Label1.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
         select = new Button("select");
@@ -386,10 +429,15 @@ public class marketing  extends JFrame  implements ActionListener {
         select.addActionListener(this);
         
         pimage=new JPanel();
-        pimage.setLayout(new FlowLayout(10, 10, 10));
+        pimage.setLayout(new GridLayout(2,1));
         pimage.add(Label1);
         pimage.add(select);
         pimage.setBackground(Color.WHITE);
+        
+        p1post=new JPanel(new GridLayout(2,1));
+        p1post.add(ppost);
+        p1post.add(pimage);
+        
 //        Canvas1 = new imageLoad(null);  
 //        Canvas1.setSize(1000, 1000);
         this.show(); 
@@ -405,7 +453,7 @@ public class marketing  extends JFrame  implements ActionListener {
         feedback.setFont(new Font("Arial", Font.BOLD, 50));
         feedback.setForeground(new Color(0,97,169));
         
-        feedback_field = new JTextField(50);
+        feedback_field = new JTextArea("feedback link",5,5);
         feedback_field.setFont(new Font("Arial", Font.PLAIN, 30));
         feedback_field.setForeground(new Color(0,97,169));
        // feedback_field.
@@ -418,7 +466,7 @@ public class marketing  extends JFrame  implements ActionListener {
         feedbackp.setLayout(new FlowLayout(10,10,10));
         feedbackp.add(feedback_field);
         next5.addActionListener(this);
-        
+        download.addActionListener(this);
         
 // adding the main base panel to the programe frame
         this.add(base);
@@ -454,9 +502,18 @@ public class marketing  extends JFrame  implements ActionListener {
            }
       // when user click next,the venue part will appear                   
     if(e.getSource()==next){
+        //scrollbar
+             scroll=new JScrollPane(base);
+             this.add(scroll);
+             scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);  
+             scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+             this.getContentPane(); 
+             this.getContentPane().add(scroll);
+             scroll.setSize(20, 100);
             base.add(p5);
-            base.add(p6);
-            base.add(p7);
+//            base.add(p6);
+//            base.add(p7);
+           
             p6.setBackground(Color.WHITE);
             p7.setBackground(Color.WHITE);
             p8.setBackground(Color.WHITE);
@@ -470,7 +527,7 @@ public class marketing  extends JFrame  implements ActionListener {
             offlineButton.setEnabled(false);//user can't choose offline 
             base.add(p8);
             where.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
-            base.add(pnext1);
+            p5.add(pnext1);
             pnext1.setBackground(Color.white);
 
     }
@@ -481,20 +538,13 @@ public class marketing  extends JFrame  implements ActionListener {
                  where.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
                  onlineButton.setEnabled(false);//user can't choose online
                  base.add(p8);
-                 base.add(pnext1);
+                 p5.add(pnext1);
                  pnext1.setBackground(Color.white);
             }
      // when user click next,the rating part and scrollbar will appear  
      if(e.getSource()==next1){
-             base.add(ratep);
-             //scrollbar
-             scroll=new JScrollPane(base);
-             this.add(scroll);
-             scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);  
-             scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-             this.getContentPane(); 
-             this.getContentPane().add(scroll);
-             scroll.setSize(20, 100);
+             
+             
              
              ratep.setBackground(Color.WHITE);
              pra1.setBackground(Color.WHITE);
@@ -503,7 +553,8 @@ public class marketing  extends JFrame  implements ActionListener {
              pres.setBackground(Color.white);
              pnext3.setBackground(Color.white);
              
-             base.add(pnext3);
+             ratep.add(pnext3);
+             base.add(ratep);
              next1.setEnabled(false);
              this.setVisible(true);
         }
@@ -522,7 +573,7 @@ public class marketing  extends JFrame  implements ActionListener {
          next2.setEnabled(false);
 }
    /* after choosing speakers number, 
-   text fields and labels will appear, they number will be the same chosen number */
+   text fields and labels will appear, they number will be the same choosen number */
    if(e.getSource()==nextButton) {
 
       int o= (int) cb.getSelectedItem();
@@ -531,7 +582,7 @@ public class marketing  extends JFrame  implements ActionListener {
       jPanel1.setVisible(false);
           // JPanel bb ;
           for(int IEEE_logo=1; IEEE_logo<=o; IEEE_logo++) {
-              speaker2 =new JTextField(20);
+              speaker2 =new JTextField(15);
               speaker2.setFont(new Font("Arial", Font.PLAIN, 30));
               speaker2.setBackground(Color.white);
               
@@ -559,15 +610,15 @@ public class marketing  extends JFrame  implements ActionListener {
     // when user click next,the banner and post part will appear    
    if(e.getSource()==next4){
         next4.setEnabled(false);
-        base.add(ppost);
-        base.add(pimage);
+        pimage.add(next5p);
+        base.add(p1post);
         postArea.setFont(new Font("Arial", Font.CENTER_BASELINE, 30));
-        base.add(next5p);
+        
              
         }
          
-   /* when user press on select button, 
-   file dialog will appear
+   /* when use choose select button, 
+   file dialod will appear
     */
   if (e.getSource()==select){             
           fd.show();  
@@ -608,16 +659,54 @@ public class marketing  extends JFrame  implements ActionListener {
             }  
               
             }catch(Exception ex){System.out.println(e);}  
-        }  
+        }
+        
+        //Download PDF button
+      if (e.getSource()==download){
+          download.setText("Downloaded");
+          download.setFont(new Font("Arial", Font.PLAIN, 40));
+          download.setForeground(new Color(0,97,169));
+          download.setEnabled(false);
+;
+            
+           try {
+                    openPdf();
+                    java.awt.Image img = getImageFromComponent(image);
+                    addImageToDocument(img);
+                    img = getImageFromComponent(pMarketing);
+                    addImageToDocument(img);
+                    img = getImageFromComponent(p5);
+                    addImageToDocument(img);
+                     img = getImageFromComponent(ratep);
+                    addImageToDocument(img);
+                     img = getImageFromComponent(panel);
+                    addImageToDocument(img);
+                     img = getImageFromComponent(jPanel);
+                    addImageToDocument(img);
+                     img = getImageFromComponent(p1post);
+                    addImageToDocument(img);
+                     img = getImageFromComponent(feedbackp);
+                    addImageToDocument(img);
+                    
+                    closePdf();
+                } catch (DocumentException e1) {
+                    e1.printStackTrace();
+                } catch (FileNotFoundException e1) {
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+      
+      }
     
-    
-    
+
     
     
     
     
     
     }   
+
   {  
   
     class imageLoad extends Canvas  
@@ -665,5 +754,35 @@ public class marketing  extends JFrame  implements ActionListener {
  
  }
 }
+  public void openPdf() throws FileNotFoundException, DocumentException {
+        document1= new Document(PageSize.A1,30,30,30,30);
+        writer = PdfWriter.getInstance(document1, new FileOutputStream("document.pdf"));
+        document1.open();
+    }
+
+    public void closePdf() {
+        document1.close();
+    }
+
+    public java.awt.Image getImageFromComponent(JComponent component) throws DocumentException {
+        BufferedImage image = new BufferedImage(component.getWidth(), component.getHeight(), BufferedImage.TYPE_INT_RGB);
+        component.paint(image.getGraphics());
+        return image;
+    }
+    com.itextpdf.text.Image img1 = null;
+    public void addImageToDocument(java.awt.Image img) throws IOException, DocumentException {
+        com.itextpdf.text.Image img1 = com.itextpdf.text.Image.getInstance(writer, img, 1);
+        document1.add((com.itextpdf.text.Element) img1);
+        System.out.println("printed!");
+    }
+
+      
   }
+
+  
+
+
+
+  
+
 
